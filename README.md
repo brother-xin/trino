@@ -1,91 +1,85 @@
-<p align="center">
-    <a href="https://trino.io/"><img alt="Trino Logo" src=".github/homepage.png" /></a>
-</p>
-<p align="center">
-    <b>Trino is a fast distributed SQL query engine for big data analytics.</b>
-</p>
-<p align="center">
-    See the <a href="https://trino.io/docs/current/">User Manual</a> for deployment instructions and end user documentation.
-</p>
-<p align="center">
-   <a href="https://trino.io/download.html">
-       <img src="https://img.shields.io/maven-central/v/io.trino/trino-server.svg?label=Trino" alt="Trino download" />
-   </a>
-   <a href="https://trino.io/slack.html">
-       <img src="https://img.shields.io/static/v1?logo=slack&logoColor=959DA5&label=Slack&labelColor=333a41&message=join%20conversation&color=3AC358" alt="Trino Slack" />
-   </a>
-   <a href="https://trino.io/trino-the-definitive-guide.html">
-       <img src="https://img.shields.io/badge/Trino%3A%20The%20Definitive%20Guide-download-brightgreen" alt="Trino: The Definitive Guide book download" />
-   </a>
-</p>
+windows下trino的编译，基于 trino 官方源代码 410 tag
 
-## Development
+#### 源码编译
 
-See [DEVELOPMENT](.github/DEVELOPMENT.md) for information about code style,
-development process, and guidelines.
+> 修改根 pom.xml 的插件： git-commit-id-plugin
 
-See [CONTRIBUTING](.github/CONTRIBUTING.md) for contribution requirements.
+~~~xml
 
-## Security
+<plugin>
+    <groupId>pl.project13.maven</groupId>
+    <artifactId>git-commit-id-plugin</artifactId>
+    <configuration>
+        <failOnNoGitDirectory>false</failOnNoGitDirectory>
+        <runOnlyOnce>true</runOnlyOnce>
+        <injectAllReactorProjects>true</injectAllReactorProjects>
+        <offline>true</offline>
+        <useNativeGit>true</useNativeGit>
+    </configuration>
+</plugin>
+~~~
 
-See the project [security policy](.github/SECURITY.md) for
-information about reporting vulnerabilities.
+> 注释根 pom.xml 中的不必要模块
 
-## Build requirements
+- trino-server-rpm
+- docs
+- plugin/trino-kafka
 
-* Mac OS X or Linux
-* Java 17.0.4+, 64-bit
-* Docker
+> 跳过代码格式检查，在跟pom.xml中的 properties 标签添加如下内容
 
-## Building Trino
+~~~properties
+ <air.check.skip-extended>true</air.check.skip-extended>
+~~~
 
-Trino is a standard Maven project. Simply run the following command from the
-project root directory:
+> 注释或移除项目中所有的 really-executable-jar-maven-plugin maven插件
 
-    ./mvnw clean install -DskipTests
+![image](./img/img.png)
 
-On the first build, Maven downloads all the dependencies from the internet
-and caches them in the local repository (`~/.m2/repository`), which can take a
-while, depending on your connection speed. Subsequent builds are faster.
+> trino-server-dev 配置maven插件
 
-Trino has a comprehensive set of tests that take a considerable amount of time
-to run, and are thus disabled by the above command. These tests are run by the
-CI system when you submit a pull request. We recommend only running tests
-locally for the areas of code that you change.
+~~~xml
 
-## Running Trino in your IDE
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <configuration>
+                <skip>true</skip>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+~~~
 
-### Overview
+修改完上面的配置后 执行命令 mvn clean install -DskipTests=true,经过十多分钟的变异后,基本能成功
 
-After building Trino for the first time, you can load the project into your IDE
-and run the server.  We recommend using
-[IntelliJ IDEA](http://www.jetbrains.com/idea/). Because Trino is a standard
-Maven project, you easily can import it into your IDE.  In IntelliJ, choose
-*Open Project* from the *Quick Start* box or choose *Open*
-from the *File* menu and select the root `pom.xml` file.
+![image](./img/p2.png)
 
-After opening the project in IntelliJ, double check that the Java SDK is
-properly configured for the project:
+### 启动前准备
 
-* Open the File menu and select Project Structure
-* In the SDKs section, ensure that JDK 17 is selected (create one if none exist)
-* In the Project section, ensure the Project language level is set to 17
+项目的配置文件都在 testing/trino-server-dev/etc 目录下，在启动服务前，我们不先启动全部的插件，先选择不启动任何插件，将
 
-### Running a testing server
+- catalog
+- config.properties
+- exchange-manager.properties
 
-The simplest way to run Trino for development is to run the `TpchQueryRunner`
-class. It will start a development version of the server that is configured with
-the TPCH connector. You can then use the CLI to execute queries against this
-server. Many other connectors have their own `*QueryRunner` class that you can
-use when working on a specific connector.
+三个文件或文件夹进行备份或删除，其中 exchange-manager.properties 这个源文件一定要改名或者删除掉，这个坑我直接踩了一个下午
 
-### Running the full server
+最后将 config.properties 中的 plugin.bundles 全部注释掉，裸机启动
+
+### 启动服务
+> 加载 antlr4
+~~~shell
+mvn antlr4:antlr4
+~~~
+> 配置启动环境
 
 Trino comes with sample configuration that should work out-of-the-box for
 development. Use the following options to create a run configuration:
 
 * Main Class: `io.trino.server.DevelopmentServer`
-* VM Options: `-ea -Dconfig=etc/config.properties -Dlog.levels-file=etc/log.properties -Djdk.attach.allowAttachSelf=true`
+* VM Option: `-ea -Dconfig=etc/config.properties -Dlog.levels-file=etc/log.properties -Djdk.attach.allowAttachSelf=true`
 * Working directory: `$MODULE_DIR$`
 * Use classpath of module: `trino-server-dev`
 
@@ -95,16 +89,124 @@ IntelliJ, using `$MODULE_DIR$` accomplishes this automatically.
 If `VM options` doesn't exist in the dialog, you need to select `Modify options`
 and enable `Add VM options`.
 
-### Running the CLI
+> 修改方法: io.trino.server.TrinoSystemRequirements.verifyOsArchitecture
 
-Start the CLI to connect to the server and run SQL queries:
+~~~java
+//将这一句注释掉或者将 failRequirement 改为 warnRequirement
+failRequirement("Trino requires Linux or Mac OS X (found %s)",osName);
+~~~
 
-    client/trino-cli/target/trino-cli-*-executable.jar
+> 修改方法： io.trino.server.TrinoSystemRequirements.verifyFileDescriptor，
 
-Run a query to see the nodes in the cluster:
+~~~java
+ OptionalLong maxFileDescriptorCount=getMaxFileDescriptorCount();
+        OptionalLong maxFileDescriptorCount=OptionalLong.of(100000);
+~~~
 
-    SELECT * FROM system.runtime.nodes;
+至此，启动就完成
 
-Run a query against the TPCH connector:
+~~~text
+2023-03-26T22:31:58.614+0800	INFO	main	io.trino.security.AccessControlManager	-- Loading system access control etc\access-control.properties --
+2023-03-26T22:31:58.617+0800	INFO	main	io.trino.security.AccessControlManager	-- Loaded system access control default --
+2023-03-26T22:31:58.655+0800	INFO	main	io.trino.server.Server	======== SERVER STARTED ========
+~~~
 
-    SELECT * FROM tpch.tiny.region;
+访问页面  http://localhost:8080/ui  也能看到相应的页面
+
+![image](./img/p3.png)
+
+### 插件启动
+
+这里我们以 mysql 的插件为例，因为我本地只装了 mysql ..doge.. ,其余的插件跟 mysql 没啥差别,配置如下
+
+![image](./img/p5.png)
+
+不出意外的话，你肯定跑不起来，控制台会报错如下
+
+~~~text
+[FATAL] Non-resolvable parent POM for io.trino:trino-root:410: Could not transfer artifact io.airlift:airbase:pom:133 from/to central (http://repo.maven.apache.org/maven2): Failed to transfer http://repo.maven.apache.org/maven2/io/airlift/airbase/133/airbase-133.pom. Error code 501, HTTPS Required and 'parent.relativePath' points at wrong local POM @ io.trino:trino-root:410, E:\jetbrains\idea\workspace\trino-410\pom.xml, line 6, column 13
+ for project io.trino:trino-mysql:410 at E:\jetbrains\idea\workspace\trino-410\testing\trino-server-dev\..\..\plugin\trino-mysql\pom.xml
+~~~
+
+这是因为请求中央仓库时，必须使用 https 而程序却用了 http
+
+![image](./img/p6.png)
+
+点击报错的地方，可以看到这么一段源代码: io.trino.server.DevelopmentPluginsProvider.buildClassLoaderFromPom
+
+~~~java
+    private PluginClassLoader buildClassLoaderFromPom(File pomFile,Function<List<URL>,PluginClassLoader>classLoaderFactory)
+        throws IOException{
+        //这里就是解析 mysql 插件的pom.xml的地方，由于这个 resolver 对象时引入的jar，且核心属性都是final修饰，没法继承
+        //所以我们只能重写一个 resolver 来代替
+        List<Artifact> artifacts=resolver.resolvePom(pomFile);
+        PluginClassLoader classLoader=createClassLoader(artifacts,classLoaderFactory);
+
+        Artifact artifact=artifacts.get(0);
+        Set<String> plugins=discoverPlugins(artifact,classLoader);
+        if(!plugins.isEmpty()){
+        File root=new File(artifact.getFile().getParentFile().getCanonicalFile(),"plugin-discovery");
+        writePluginServices(plugins,root);
+        classLoader=classLoader.withUrl(root.toURI().toURL());
+        }
+
+        return classLoader;
+        }
+~~~
+
+诚如上面的注释所说，我们只需要 复制 一个jar包中的resolver ，然后重写需要的方法，我们就能把 http 改成
+https,代码参考 **io.trino.server.HttpsArtifactResolver** 这个类即可
+
+然后将下面两个类的相应resolver变更即可
+
+- io.trino.server.DevelopmentPluginsProvider
+- io.trino.server.DevelopmentLoaderConfig
+
+重新启动，我们将 http 改成了 https,而且使用的是 阿里云 仓库地址，取代了 源码中 的 中央仓库地址，发现刚才的错误消失了，但是新的错误产生了
+
+![image](./img/p8.png)
+
+这是因为 linux 与 windows 路径书写方式不一样造成的,而 trino 的代码原本的需求就是必须使用 linux 或 mac ，所以我们需要修改代码兼顾下
+> 修改 io.trino.server.PluginDiscovery.discoverPlugins()  兼顾windows
+~~~java
+    if (!(file.getPath().endsWith("/target/classes") || file.getPath().endsWith("\\target\\classes"))) {
+        throw new RuntimeException("Unexpected file for main artifact: " + file);
+    }
+~~~
+> 修改 io.trino.server.PluginDiscovery.binaryName(),适配windows
+~~~java
+private static String binaryName(String javaName) {
+    String property = System.getProperty("os.name");
+    if (property.trim().toLowerCase().contains("windows")) {
+        return javaName.replace('.', '\\');
+    }
+    return javaName.replace('.', '/');
+}
+~~~
+> 修改 io.trino.server.PluginDiscovery.javaName
+~~~java
+    private static String javaName(String binaryName) {
+        return binaryName.replace('/', '.').replace("\\", ".");
+    }
+~~~
+不出意外，你遇到了启动过程中的最后一个错误，废话不多说，自动上代码
+> 修改 io.trino.server.PluginDiscovery.readClass(),适配非插件类的target
+~~~java
+    private static ClassReader readClass(String name, ClassLoader classLoader) {
+        try (InputStream in = classLoader.getResourceAsStream(binaryName(name) + CLASS_FILE_SUFFIX)) {
+            if (in == null) {
+                // throw new RuntimeException("Failed to read class: " + name);
+                return new ClassReader(name);
+            }
+            return new ClassReader(toByteArray(in));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+~~~
+至此,整个 mysql 插件就加载完成，项目也就启动成功了.
+
+### 自定义连接器
+- trino-tdengine-v2 ： 基于jdbc协议实现的 tdengine 连接器
+- trino-tdengine ：    源码级别实现的 tdengine 连接器
+- trino-kingbase ：    基于jdbc协议实现的 人大金仓 连接器
