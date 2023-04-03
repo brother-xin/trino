@@ -22,13 +22,12 @@ import static com.google.inject.multibindings.OptionalBinder.newOptionalBinder;
 import static io.airlift.configuration.ConfigBinder.configBinder;
 
 public final class DevelopmentServer
-        extends Server
-{
-    private DevelopmentServer() {}
+        extends Server {
+    private DevelopmentServer() {
+    }
 
     @Override
-    protected Iterable<? extends Module> getAdditionalModules()
-    {
+    protected Iterable<? extends Module> getAdditionalModules() {
         return ImmutableList.of(binder -> {
             newOptionalBinder(binder, PluginsProvider.class).setBinding()
                     .to(DevelopmentPluginsProvider.class).in(Scopes.SINGLETON);
@@ -36,8 +35,7 @@ public final class DevelopmentServer
         });
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         new DevelopmentServer().start("dev");
     }
 }
