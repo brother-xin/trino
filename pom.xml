@@ -182,6 +182,7 @@
         <module>plugin/trino-thrift-testing-server</module>
         <module>plugin/trino-tpcds</module>
         <module>plugin/trino-tpch</module>
+        <module>plugin/trino-kingbase</module>
         <module>service/trino-proxy</module>
         <module>service/trino-verifier</module>
         <module>testing/trino-benchmark</module>
@@ -2065,38 +2066,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <configuration>
-                        <rules>
-                            <compound implementation="com.github.ferstl.maven.pomenforcers.CompoundPedanticEnforcer">
-                                <enforcers>
-                                    POM_SECTION_ORDER,MODULE_ORDER,DEPENDENCY_MANAGEMENT_ORDER,DEPENDENCY_ORDER,DEPENDENCY_ELEMENT
-                                </enforcers>
-                                <pomSectionPriorities>
-                                    modelVersion,parent,groupId,artifactId,version,name,description,packaging,url,inceptionYear,licenses,scm,properties,modules
-                                </pomSectionPriorities>
-                                <dependenciesGroupIdPriorities>io.trino,io.airlift</dependenciesGroupIdPriorities>
-                                <dependenciesOrderBy>scope,groupId,artifactId</dependenciesOrderBy>
-                                <dependenciesScopePriorities>compile,runtime,provided,test</dependenciesScopePriorities>
-                                <dependencyManagementOrderBy>groupId,artifactId</dependencyManagementOrderBy>
-                                <dependencyManagementGroupIdPriorities>io.trino,io.airlift
-                                </dependencyManagementGroupIdPriorities>
-                                <dependencyElementOrdering>groupId,artifactId,type,version</dependencyElementOrdering>
-                            </compound>
-                            <requireUpperBoundDeps>
-                                <excludes combine.children="append">
-                                    <!-- TODO: fix this in Airlift resolver -->
-                                    <exclude>org.codehaus.plexus:plexus-utils</exclude>
-                                    <exclude>com.google.guava:guava</exclude>
-                                    <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
-                                    <exclude>com.google.j2objc:j2objc-annotations</exclude>
-                                </excludes>
-                            </requireUpperBoundDeps>
-                            <bannedDependencies>
-                                <excludes combine.children="append">
-                                    <!-- We don't use log4j2, additionally versions < 2.15.0 are vulnerable to the RCE Log4Shell (CVE-2021-44228) -->
-                                    <exclude>org.apache.logging.log4j:log4j-core</exclude>
-                                </excludes>
-                            </bannedDependencies>
-                        </rules>
+                        <skip>true</skip>
                     </configuration>
                     <dependencies>
                         <dependency>

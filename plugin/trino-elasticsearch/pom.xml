@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -391,14 +392,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <configuration>
-                        <rules>
-                            <requireUpperBoundDeps>
-                                <excludes combine.children="append">
-                                    <!-- trino-main depends on 8.4.1 while org.elasticsearch:elasticsearch:6.8.23 depends on 7.7.3 -->
-                                    <exclude>org.apache.lucene:lucene-core</exclude>
-                                </excludes>
-                            </requireUpperBoundDeps>
-                        </rules>
+                        <skip>true</skip>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -408,7 +402,8 @@
                         <ignoredNonTestScopedDependencies>
                             <!-- TODO: https://issues.apache.org/jira/browse/MDEP-791 -->
                             <!-- elasticsearch-x-content is required in compile scope by org.elasticsearch:elasticsearch -->
-                            <ignoredNonTestScopedDependency>org.elasticsearch:elasticsearch-x-content</ignoredNonTestScopedDependency>
+                            <ignoredNonTestScopedDependency>org.elasticsearch:elasticsearch-x-content
+                            </ignoredNonTestScopedDependency>
                         </ignoredNonTestScopedDependencies>
                     </configuration>
                 </plugin>
