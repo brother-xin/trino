@@ -19,63 +19,53 @@ import io.airlift.configuration.Config;
 import io.airlift.resolver.ArtifactResolver;
 
 import javax.validation.constraints.NotNull;
-
 import java.util.List;
 
-public class DevelopmentLoaderConfig
-{
+public class DevelopmentLoaderConfig {
     private static final Splitter SPLITTER = Splitter.on(',').omitEmptyStrings().trimResults();
 
     private List<String> plugins = ImmutableList.of();
-    private String mavenLocalRepository = ArtifactResolver.USER_LOCAL_REPO;
+    private String mavenLocalRepository = HttpsArtifactResolver.USER_LOCAL_REPO;
     private List<String> mavenRemoteRepository = ImmutableList.of(ArtifactResolver.MAVEN_CENTRAL_URI);
 
-    public List<String> getPlugins()
-    {
+    public List<String> getPlugins() {
         return plugins;
     }
 
-    public DevelopmentLoaderConfig setPlugins(List<String> plugins)
-    {
+    public DevelopmentLoaderConfig setPlugins(List<String> plugins) {
         this.plugins = ImmutableList.copyOf(plugins);
         return this;
     }
 
     @Config("plugin.bundles")
-    public DevelopmentLoaderConfig setPlugins(String plugins)
-    {
+    public DevelopmentLoaderConfig setPlugins(String plugins) {
         this.plugins = SPLITTER.splitToList(plugins);
         return this;
     }
 
     @NotNull
-    public String getMavenLocalRepository()
-    {
+    public String getMavenLocalRepository() {
         return mavenLocalRepository;
     }
 
     @Config("maven.repo.local")
-    public DevelopmentLoaderConfig setMavenLocalRepository(String mavenLocalRepository)
-    {
+    public DevelopmentLoaderConfig setMavenLocalRepository(String mavenLocalRepository) {
         this.mavenLocalRepository = mavenLocalRepository;
         return this;
     }
 
     @NotNull
-    public List<String> getMavenRemoteRepository()
-    {
+    public List<String> getMavenRemoteRepository() {
         return mavenRemoteRepository;
     }
 
-    public DevelopmentLoaderConfig setMavenRemoteRepository(List<String> mavenRemoteRepository)
-    {
+    public DevelopmentLoaderConfig setMavenRemoteRepository(List<String> mavenRemoteRepository) {
         this.mavenRemoteRepository = mavenRemoteRepository;
         return this;
     }
 
     @Config("maven.repo.remote")
-    public DevelopmentLoaderConfig setMavenRemoteRepository(String mavenRemoteRepository)
-    {
+    public DevelopmentLoaderConfig setMavenRemoteRepository(String mavenRemoteRepository) {
         this.mavenRemoteRepository = ImmutableList.copyOf(Splitter.on(',').omitEmptyStrings().trimResults().split(mavenRemoteRepository));
         return this;
     }
