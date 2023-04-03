@@ -35,6 +35,17 @@ windows下trino的编译，基于 trino 官方源代码 410 tag
 
 ![image](./img/img.png)
 
+> 跳过项目中所有的代码检查插件 maven-enforcer-plugin
+~~~xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-enforcer-plugin</artifactId>
+    <configuration>
+        <skip>true</skip>
+    </configuration>
+</plugin>
+~~~
+
 > trino-server-dev 配置maven插件
 
 ~~~xml
