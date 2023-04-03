@@ -32,15 +32,14 @@ import java.util.stream.Stream;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.lang.String.format;
 
-final class TrinoSystemRequirements
-{
+final class TrinoSystemRequirements {
     private static final int MIN_FILE_DESCRIPTORS = 4096;
     private static final int RECOMMENDED_FILE_DESCRIPTORS = 8192;
 
-    private TrinoSystemRequirements() {}
+    private TrinoSystemRequirements() {
+    }
 
-    public static void verifyJvmRequirements()
-    {
+    public static void verifyJvmRequirements() {
         verifyJavaVersion();
         verify64BitJvm();
         verifyOsArchitecture();
@@ -50,24 +49,21 @@ final class TrinoSystemRequirements
         verifySlice();
     }
 
-    private static void verify64BitJvm()
-    {
+    private static void verify64BitJvm() {
         String dataModel = System.getProperty("sun.arch.data.model");
         if (!"64".equals(dataModel)) {
             failRequirement("Trino requires a 64-bit JVM (found %s)", dataModel);
         }
     }
 
-    private static void verifyByteOrder()
-    {
+    private static void verifyByteOrder() {
         ByteOrder order = ByteOrder.nativeOrder();
         if (!order.equals(ByteOrder.LITTLE_ENDIAN)) {
             failRequirement("Trino requires a little endian platform (found %s)", order);
         }
     }
 
-    private static void verifyOsArchitecture()
-    {
+    private static void verifyOsArchitecture() {
         String osName = StandardSystemProperty.OS_NAME.value();
         String osArch = StandardSystemProperty.OS_ARCH.value();
         if ("Linux".equals(osName)) {
@@ -76,23 +72,19 @@ final class TrinoSystemRequirements
             }
             if ("aarch64".equals(osArch)) {
                 warnRequirement("Support for the ARM architecture is experimental");
-            }
-            else if ("ppc64le".equals(osArch)) {
+            } else if ("ppc64le".equals(osArch)) {
                 warnRequirement("Support for the POWER architecture is experimental");
             }
-        }
-        else if ("Mac OS X".equals(osName)) {
+        } else if ("Mac OS X".equals(osName)) {
             if (!"x86_64".equals(osArch) && !"aarch64".equals(osArch)) {
                 failRequirement("Trino requires x86_64 or aarch64 on Mac OS X (found %s)", osArch);
             }
-        }
-        else {
-            failRequirement("Trino requires Linux or Mac OS X (found %s)", osName);
+        } else {
+            warnRequirement("Trino requires Linux or Mac OS X (found %s)", osName);
         }
     }
 
-    private static void verifyJavaVersion()
-    {
+    private static void verifyJavaVersion() {
         Version required = Version.parse("17.0.3");
 
         if (Runtime.version().compareTo(required) < 0) {
@@ -100,8 +92,7 @@ final class TrinoSystemRequirements
         }
     }
 
-    private static void verifyUsingG1Gc()
-    {
+    private static void verifyUsingG1Gc() {
         try {
             List<String> garbageCollectors = ManagementFactory.getGarbageCollectorMXBeans().stream()
                     .map(GarbageCollectorMXBean::getName)
@@ -110,15 +101,13 @@ final class TrinoSystemRequirements
             if (garbageCollectors.stream().noneMatch(name -> name.toUpperCase(Locale.US).startsWith("G1 "))) {
                 warnRequirement("Current garbage collectors are %s. Trino recommends the G1 garbage collector.", garbageCollectors);
             }
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             // This should never happen since we have verified the OS and JVM above
             failRequirement("Cannot read garbage collector information: %s", e);
         }
     }
 
-    private static void verifyFileDescriptor()
-    {
+    private static void verifyFileDescriptor() {
         OptionalLong maxFileDescriptorCount = getMaxFileDescriptorCount();
         if (maxFileDescriptorCount.isEmpty()) {
             // This should never happen since we have verified the OS and JVM above
@@ -132,8 +121,7 @@ final class TrinoSystemRequirements
         }
     }
 
-    private static OptionalLong getMaxFileDescriptorCount()
-    {
+    private static OptionalLong getMaxFileDescriptorCount() {
         return Stream.of(ManagementFactory.getOperatingSystemMXBean())
                 .filter(UnixOperatingSystemMXBean.class::isInstance)
                 .map(UnixOperatingSystemMXBean.class::cast)
@@ -141,8 +129,7 @@ final class TrinoSystemRequirements
                 .findFirst();
     }
 
-    private static void verifySlice()
-    {
+    private static void verifySlice() {
         Slice slice = Slices.wrappedBuffer(new byte[5]);
         slice.setByte(4, 0xDE);
         slice.setByte(3, 0xAD);
@@ -157,22 +144,19 @@ final class TrinoSystemRequirements
      * Perform a sanity check to make sure that the year is reasonably current, to guard against
      * issues in third party libraries.
      */
-    public static void verifySystemTimeIsReasonable()
-    {
+    public static void verifySystemTimeIsReasonable() {
         int currentYear = DateTime.now().year().get();
         if (currentYear < 2022) {
             failRequirement("Trino requires the system time to be current (found year %s)", currentYear);
         }
     }
 
-    private static void failRequirement(String format, Object... args)
-    {
+    private static void failRequirement(String format, Object... args) {
         System.err.println("ERROR: " + format(format, args));
         System.exit(100);
     }
 
-    private static void warnRequirement(String format, Object... args)
-    {
+    private static void warnRequirement(String format, Object... args) {
         System.err.println("WARNING: " + format(format, args));
     }
 }
