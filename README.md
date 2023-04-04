@@ -163,9 +163,9 @@ private PluginClassLoader buildClassLoaderFromPom(File pomFile,Function<List<URL
     Artifact artifact=artifacts.get(0);
     Set<String> plugins=discoverPlugins(artifact,classLoader);
     if(!plugins.isEmpty()){
-    File root=new File(artifact.getFile().getParentFile().getCanonicalFile(),"plugin-discovery");
-    writePluginServices(plugins,root);
-    classLoader=classLoader.withUrl(root.toURI().toURL());
+        File root=new File(artifact.getFile().getParentFile().getCanonicalFile(),"plugin-discovery");
+        writePluginServices(plugins,root);
+        classLoader=classLoader.withUrl(root.toURI().toURL());
     }
 
     return classLoader;
@@ -206,7 +206,7 @@ if(!(file.getPath().endsWith("/target/classes")||file.getPath().endsWith("\\targ
 private static String binaryName(String javaName){
     String property=System.getProperty("os.name");
     if(property.trim().toLowerCase().contains("windows")){
-    return javaName.replace('.','\\');
+        return javaName.replace('.','\\');
     }
     return javaName.replace('.','/');
 }
