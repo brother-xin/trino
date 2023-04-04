@@ -115,8 +115,10 @@ failRequirement("Trino requires Linux or Mac OS X (found %s)",osName);
 > 修改方法： io.trino.server.TrinoSystemRequirements.verifyFileDescriptor，
 
 ~~~java
+// 修改前
  OptionalLong maxFileDescriptorCount=getMaxFileDescriptorCount();
-        OptionalLong maxFileDescriptorCount=OptionalLong.of(100000);
+// 修改后
+ OptionalLong maxFileDescriptorCount=OptionalLong.of(100000);
 ~~~
 
 至此，启动就完成
