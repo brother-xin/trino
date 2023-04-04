@@ -195,9 +195,9 @@ public static final String USER_LOCAL_REPO="E:\\maven\\rep";
 > 修改 io.trino.server.PluginDiscovery.discoverPlugins()  兼顾windows
 
 ~~~java
-    if(!(file.getPath().endsWith("/target/classes")||file.getPath().endsWith("\\target\\classes"))){
-        throw new RuntimeException("Unexpected file for main artifact: "+file);
-        }
+if(!(file.getPath().endsWith("/target/classes")||file.getPath().endsWith("\\target\\classes"))){
+    throw new RuntimeException("Unexpected file for main artifact: "+file);
+    }
 ~~~
 
 > 修改 io.trino.server.PluginDiscovery.binaryName(),适配windows
