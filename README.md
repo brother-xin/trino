@@ -65,7 +65,7 @@ windows下trino的编译，基于 trino 官方源代码 410 tag
 </build>
 ~~~
 
-修改完上面的配置后 执行命令 mvn clean install -DskipTests=true,经过十多分钟的变异后,基本能成功
+修改完上面的配置后 执行命令 mvn clean install -DskipTests=true,经过十多分钟的编译后,基本能成功
 
 ![image](./img/p2.png)
 
