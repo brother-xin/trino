@@ -25,7 +25,7 @@ windows下trino的编译，基于 trino 官方源代码 410 tag
 - docs
 - plugin/trino-kafka
 
-> 跳过代码格式检查，在跟pom.xml中的 properties 标签添加如下内容
+> 跳过代码格式检查，在根pom.xml中的 properties 标签添加如下内容
 
 ~~~properties
  <air.check.skip-extended>true</air.check.skip-extended>
