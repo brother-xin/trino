@@ -197,44 +197,44 @@ public static final String USER_LOCAL_REPO="E:\\maven\\rep";
 ~~~java
 if(!(file.getPath().endsWith("/target/classes")||file.getPath().endsWith("\\target\\classes"))){
     throw new RuntimeException("Unexpected file for main artifact: "+file);
-    }
+}
 ~~~
 
 > 修改 io.trino.server.PluginDiscovery.binaryName(),适配windows
 
 ~~~java
 private static String binaryName(String javaName){
-        String property=System.getProperty("os.name");
-        if(property.trim().toLowerCase().contains("windows")){
-        return javaName.replace('.','\\');
-        }
-        return javaName.replace('.','/');
-        }
+    String property=System.getProperty("os.name");
+    if(property.trim().toLowerCase().contains("windows")){
+    return javaName.replace('.','\\');
+    }
+    return javaName.replace('.','/');
+}
 ~~~
 
 > 修改 io.trino.server.PluginDiscovery.javaName
 
 ~~~java
-    private static String javaName(String binaryName){
-        return binaryName.replace('/','.').replace("\\",".");
-        }
+private static String javaName(String binaryName){
+    return binaryName.replace('/','.').replace("\\",".");
+}
 ~~~
 
 不出意外，你遇到了启动过程中的最后一个错误，废话不多说，自动上代码
 > 修改 io.trino.server.PluginDiscovery.readClass(),适配非插件类的target
 
 ~~~java
-    private static ClassReader readClass(String name,ClassLoader classLoader){
-        try(InputStream in=classLoader.getResourceAsStream(binaryName(name)+CLASS_FILE_SUFFIX)){
-        if(in==null){
-        // throw new RuntimeException("Failed to read class: " + name);
-        return new ClassReader(name);
+private static ClassReader readClass(String name, ClassLoader classLoader) {
+    try (InputStream in = classLoader.getResourceAsStream(binaryName(name) + CLASS_FILE_SUFFIX)) {
+        if (in == null) {
+           // throw new RuntimeException("Failed to read class: " + name);
+           return new ClassReader(name);
         }
         return new ClassReader(toByteArray(in));
-        }catch(IOException e){
-        throw new UncheckedIOException(e);
-        }
-        }
+    } catch (IOException e) {
+       throw new UncheckedIOException(e);
+    }
+}
 ~~~
 
 至此,整个 mysql 插件就加载完成，项目也就启动成功了.
