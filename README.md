@@ -153,23 +153,23 @@ failRequirement("Trino requires Linux or Mac OS X (found %s)",osName);
 点击报错的地方，可以看到这么一段源代码: io.trino.server.DevelopmentPluginsProvider.buildClassLoaderFromPom
 
 ~~~java
-    private PluginClassLoader buildClassLoaderFromPom(File pomFile,Function<List<URL>,PluginClassLoader>classLoaderFactory)
-        throws IOException{
-        //这里就是解析 mysql 插件的pom.xml的地方，由于这个 resolver 对象时引入的jar，且核心属性都是final修饰，没法继承
-        //所以我们只能重写一个 resolver 来代替
-        List<Artifact> artifacts=resolver.resolvePom(pomFile);
-        PluginClassLoader classLoader=createClassLoader(artifacts,classLoaderFactory);
+private PluginClassLoader buildClassLoaderFromPom(File pomFile,Function<List<URL>,PluginClassLoader>classLoaderFactory)
+    throws IOException{
+    //这里就是解析 mysql 插件的pom.xml的地方，由于这个 resolver 对象是引入的jar，且核心属性都是final修饰，没法继承
+    //所以我们只能重写一个 resolver 来代替
+    List<Artifact> artifacts=resolver.resolvePom(pomFile);
+    PluginClassLoader classLoader=createClassLoader(artifacts,classLoaderFactory);
 
-        Artifact artifact=artifacts.get(0);
-        Set<String> plugins=discoverPlugins(artifact,classLoader);
-        if(!plugins.isEmpty()){
-        File root=new File(artifact.getFile().getParentFile().getCanonicalFile(),"plugin-discovery");
-        writePluginServices(plugins,root);
-        classLoader=classLoader.withUrl(root.toURI().toURL());
-        }
+    Artifact artifact=artifacts.get(0);
+    Set<String> plugins=discoverPlugins(artifact,classLoader);
+    if(!plugins.isEmpty()){
+    File root=new File(artifact.getFile().getParentFile().getCanonicalFile(),"plugin-discovery");
+    writePluginServices(plugins,root);
+    classLoader=classLoader.withUrl(root.toURI().toURL());
+    }
 
-        return classLoader;
-        }
+    return classLoader;
+    }
 ~~~
 
 诚如上面的注释所说，我们只需要 复制 一个jar包中的resolver ，然后重写需要的方法，我们就能把 http 改成
