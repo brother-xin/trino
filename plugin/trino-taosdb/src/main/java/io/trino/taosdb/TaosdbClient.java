@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.trino.tdengine.v2;
+package io.trino.taosdb;
 
 import com.google.common.collect.ImmutableSet;
 import com.taosdata.jdbc.ColumnMetaData;
@@ -64,8 +64,8 @@ import static java.lang.String.format;
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.util.Locale.ENGLISH;
 
-public class TdEngineClient extends BaseJdbcClient {
-    private static final Logger log = Logger.get(TdEngineClient.class);
+public class TaosdbClient extends BaseJdbcClient {
+    private static final Logger log = Logger.get(TaosdbClient.class);
     private static final int MAX_SUPPORTED_DATE_TIME_PRECISION = 6;
     private static final int ZERO_PRECISION_TIMESTAMP_COLUMN_SIZE = 19;
     private static final int ZERO_PRECISION_TIME_COLUMN_SIZE = 8;
@@ -78,7 +78,7 @@ public class TdEngineClient extends BaseJdbcClient {
     private final IdentifierMapping identifierMapping;
 
     @Inject
-    public TdEngineClient(
+    public TaosdbClient(
             BaseJdbcConfig config,
             JdbcStatisticsConfig statisticsConfig,
             ConnectionFactory connectionFactory,

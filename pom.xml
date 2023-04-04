@@ -184,7 +184,7 @@
         <module>plugin/trino-tpch</module>
         <module>plugin/trino-kingbase</module>
         <module>plugin/trino-tdengine</module>
-        <module>plugin/trino-tdengine-v2</module>
+        <module>plugin/trino-taosdb</module>
         <module>service/trino-proxy</module>
         <module>service/trino-verifier</module>
         <module>testing/trino-benchmark</module>

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.trino.tdengine.v2;
+package io.trino.taosdb;
 
 import com.google.inject.Binder;
 import com.google.inject.Provides;
@@ -30,21 +30,21 @@ import java.util.Properties;
 import static com.google.inject.multibindings.Multibinder.newSetBinder;
 import static io.airlift.configuration.ConfigBinder.configBinder;
 
-public class TdEngineClientModule extends AbstractConfigurationAwareModule {
+public class TaosdbClientModule extends AbstractConfigurationAwareModule {
     @Provides
     @Singleton
     @ForBaseJdbc
     public static ConnectionFactory createConnectionFactory(BaseJdbcConfig config, CredentialProvider credentialProvider
-            , TdEngineConfig tdEngineConfig)
+            , TaosdbConfig taosdbConfig)
             throws SQLException {
         return new DriverConnectionFactory(
                 new RestfulDriver(),
                 config.getConnectionUrl(),
-                getConnectionProperties(tdEngineConfig),
+                getConnectionProperties(taosdbConfig),
                 credentialProvider);
     }
 
-    public static Properties getConnectionProperties(TdEngineConfig config) {
+    public static Properties getConnectionProperties(TaosdbConfig config) {
         Properties connectionProperties = new Properties();
         connectionProperties.setProperty("useUnicode", "true");
         connectionProperties.setProperty("characterEncoding", "utf8");
@@ -55,9 +55,9 @@ public class TdEngineClientModule extends AbstractConfigurationAwareModule {
 
     @Override
     protected void setup(Binder binder) {
-        binder.bind(JdbcClient.class).annotatedWith(ForBaseJdbc.class).to(TdEngineClient.class).in(Scopes.SINGLETON);
-        configBinder(binder).bindConfig(TdEngineJdbcConfig.class);
-        configBinder(binder).bindConfig(TdEngineConfig.class);
+        binder.bind(JdbcClient.class).annotatedWith(ForBaseJdbc.class).to(TaosdbClient.class).in(Scopes.SINGLETON);
+        configBinder(binder).bindConfig(TaosdbJdbcConfig.class);
+        configBinder(binder).bindConfig(TaosdbConfig.class);
         configBinder(binder).bindConfig(JdbcStatisticsConfig.class);
         install(new DecimalModule());
         install(new JdbcJoinPushdownSupportModule());

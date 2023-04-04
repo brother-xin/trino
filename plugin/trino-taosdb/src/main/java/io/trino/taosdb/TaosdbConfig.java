@@ -1,4 +1,4 @@
-package io.trino.tdengine.v2;
+package io.trino.taosdb;
 
 import io.airlift.configuration.Config;
 import io.airlift.configuration.ConfigDescription;
@@ -10,7 +10,7 @@ import io.airlift.configuration.ConfigSecuritySensitive;
  * connection.user=root
  * connection.password=taosdata
  */
-public class TdEngineConfig {
+public class TaosdbConfig {
     private String url;
     private String user;
     private String password;
@@ -19,7 +19,7 @@ public class TdEngineConfig {
     @Config("connection.url")
     @ConfigDescription("Connection Url required to access the TdEngine")
     @ConfigSecuritySensitive
-    public TdEngineConfig setUrl(String url) {
+    public TaosdbConfig setUrl(String url) {
         this.url = url;
         return this;
     }
@@ -27,7 +27,7 @@ public class TdEngineConfig {
     @Config("connection.user")
     @ConfigDescription("Connection User required to access the TdEngine")
     @ConfigSecuritySensitive
-    public TdEngineConfig setUser(String user) {
+    public TaosdbConfig setUser(String user) {
         this.user = user;
         return this;
     }
@@ -35,7 +35,7 @@ public class TdEngineConfig {
     @Config("connection.password")
     @ConfigDescription("Connection Password required to access the TdEngine")
     @ConfigSecuritySensitive
-    public TdEngineConfig setPassword(String password) {
+    public TaosdbConfig setPassword(String password) {
         this.password = password;
         return this;
     }

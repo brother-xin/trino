@@ -10,7 +10,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>trino-tdengine-v2</artifactId>
+    <artifactId>trino-taosdb</artifactId>
     <packaging>trino-plugin</packaging>
     <properties>
         <air.main.basedir>${project.parent.basedir}</air.main.basedir>

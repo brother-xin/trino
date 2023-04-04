@@ -1,8 +1,8 @@
-package io.trino.tdengine.v2;
+package io.trino.taosdb;
 
 import io.trino.plugin.jdbc.BaseJdbcConfig;
 
-public class TdEngineJdbcConfig extends BaseJdbcConfig {
+public class TaosdbJdbcConfig extends BaseJdbcConfig {
 //    @AssertTrue(message = "Invalid JDBC URL for MySQL connector")
 //    public boolean isUrlValid() {
 //        try {
