@@ -36,7 +36,9 @@ windows下trino的编译，基于 trino 官方源代码 410 tag
 ![image](./img/img.png)
 
 > 跳过项目中所有的代码检查插件 maven-enforcer-plugin
+
 ~~~xml
+
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
@@ -80,10 +82,13 @@ windows下trino的编译，基于 trino 官方源代码 410 tag
 最后将 config.properties 中的 plugin.bundles 全部注释掉，裸机启动
 
 ### 启动服务
+
 > 加载 antlr4
+
 ~~~shell
 mvn antlr4:antlr4
 ~~~
+
 > 配置启动环境
 
 Trino comes with sample configuration that should work out-of-the-box for
@@ -168,6 +173,13 @@ failRequirement("Trino requires Linux or Mac OS X (found %s)",osName);
 诚如上面的注释所说，我们只需要 复制 一个jar包中的resolver ，然后重写需要的方法，我们就能把 http 改成
 https,代码参考 **io.trino.server.HttpsArtifactResolver** 这个类即可
 
+注意：因为偷懒，**io.trino.server.HttpsArtifactResolver** 的本地仓库固定写了，结合自己的环境修改，这个很重要
+，不然后面通过 ClassReader 获取类会找不到(ClassNotFound)
+
+~~~java
+public static final String USER_LOCAL_REPO="E:\\maven\\rep";
+~~~
+
 然后将下面两个类的相应resolver变更即可
 
 - io.trino.server.DevelopmentPluginsProvider
@@ -179,45 +191,54 @@ https,代码参考 **io.trino.server.HttpsArtifactResolver** 这个类即可
 
 这是因为 linux 与 windows 路径书写方式不一样造成的,而 trino 的代码原本的需求就是必须使用 linux 或 mac ，所以我们需要修改代码兼顾下
 > 修改 io.trino.server.PluginDiscovery.discoverPlugins()  兼顾windows
+
 ~~~java
-    if (!(file.getPath().endsWith("/target/classes") || file.getPath().endsWith("\\target\\classes"))) {
-        throw new RuntimeException("Unexpected file for main artifact: " + file);
-    }
+    if(!(file.getPath().endsWith("/target/classes")||file.getPath().endsWith("\\target\\classes"))){
+        throw new RuntimeException("Unexpected file for main artifact: "+file);
+        }
 ~~~
+
 > 修改 io.trino.server.PluginDiscovery.binaryName(),适配windows
+
 ~~~java
-private static String binaryName(String javaName) {
-    String property = System.getProperty("os.name");
-    if (property.trim().toLowerCase().contains("windows")) {
-        return javaName.replace('.', '\\');
-    }
-    return javaName.replace('.', '/');
-}
+private static String binaryName(String javaName){
+        String property=System.getProperty("os.name");
+        if(property.trim().toLowerCase().contains("windows")){
+        return javaName.replace('.','\\');
+        }
+        return javaName.replace('.','/');
+        }
 ~~~
+
 > 修改 io.trino.server.PluginDiscovery.javaName
+
 ~~~java
-    private static String javaName(String binaryName) {
-        return binaryName.replace('/', '.').replace("\\", ".");
-    }
+    private static String javaName(String binaryName){
+        return binaryName.replace('/','.').replace("\\",".");
+        }
 ~~~
+
 不出意外，你遇到了启动过程中的最后一个错误，废话不多说，自动上代码
 > 修改 io.trino.server.PluginDiscovery.readClass(),适配非插件类的target
+
 ~~~java
-    private static ClassReader readClass(String name, ClassLoader classLoader) {
-        try (InputStream in = classLoader.getResourceAsStream(binaryName(name) + CLASS_FILE_SUFFIX)) {
-            if (in == null) {
-                // throw new RuntimeException("Failed to read class: " + name);
-                return new ClassReader(name);
-            }
-            return new ClassReader(toByteArray(in));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+    private static ClassReader readClass(String name,ClassLoader classLoader){
+        try(InputStream in=classLoader.getResourceAsStream(binaryName(name)+CLASS_FILE_SUFFIX)){
+        if(in==null){
+        // throw new RuntimeException("Failed to read class: " + name);
+        return new ClassReader(name);
         }
-    }
+        return new ClassReader(toByteArray(in));
+        }catch(IOException e){
+        throw new UncheckedIOException(e);
+        }
+        }
 ~~~
+
 至此,整个 mysql 插件就加载完成，项目也就启动成功了.
 
 ### 自定义连接器
+
 - trino-taosdb ： 基于jdbc协议实现的 tdengine 连接器
-- trino-tdengine ：    源码级别实现的 tdengine 连接器
-- trino-kingbase ：    基于jdbc协议实现的 人大金仓 连接器
+- trino-tdengine ： 源码级别实现的 tdengine 连接器
+- trino-kingbase ： 基于jdbc协议实现的 人大金仓 连接器
