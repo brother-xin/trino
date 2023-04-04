@@ -218,6 +218,6 @@ private static String binaryName(String javaName) {
 至此,整个 mysql 插件就加载完成，项目也就启动成功了.
 
 ### 自定义连接器
-- trino-tdengine-v2 ： 基于jdbc协议实现的 tdengine 连接器
+- trino-taosdb ： 基于jdbc协议实现的 tdengine 连接器
 - trino-tdengine ：    源码级别实现的 tdengine 连接器
 - trino-kingbase ：    基于jdbc协议实现的 人大金仓 连接器
