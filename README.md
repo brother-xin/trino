@@ -77,7 +77,7 @@ windows下trino的编译，基于 trino 官方源代码 410 tag
 - config.properties
 - exchange-manager.properties
 
-三个文件或文件夹进行备份或删除，其中 exchange-manager.properties 这个源文件一定要改名或者删除掉，这个坑我直接踩了一个下午
+三个文件或文件夹进行备份或删除，其中 exchange-manager.properties 这个源文件一定要改名或者删除掉，程序会读取这个文件，读不到会直接跳过
 
 最后将 config.properties 中的 plugin.bundles 全部注释掉，裸机启动
 
