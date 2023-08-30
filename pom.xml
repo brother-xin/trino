@@ -132,7 +132,7 @@
         <module>lib/trino-record-decoder</module>
         <module>plugin/trino-accumulo</module>
         <module>plugin/trino-accumulo-iterators</module>
-        <module>plugin/trino-atop</module>
+<!--        <module>plugin/trino-atop</module>-->
         <module>plugin/trino-base-jdbc</module>
         <module>plugin/trino-bigquery</module>
         <module>plugin/trino-blackhole</module>
@@ -183,6 +183,7 @@
         <module>plugin/trino-tpcds</module>
         <module>plugin/trino-tpch</module>
         <module>plugin/trino-kingbase</module>
+        <module>plugin/trino-opengauss</module>
         <module>plugin/trino-tdengine</module>
         <module>plugin/trino-taosdb</module>
         <module>service/trino-proxy</module>
@@ -609,11 +610,11 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.trino</groupId>
-                <artifactId>trino-server-rpm</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>io.trino</groupId>-->
+<!--                <artifactId>trino-server-rpm</artifactId>-->
+<!--                <version>${project.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>io.trino</groupId>
@@ -851,11 +852,11 @@
                 <version>${dep.airlift.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.airlift</groupId>
-                <artifactId>dbpool</artifactId>
-                <version>${dep.airlift.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>io.airlift</groupId>-->
+<!--                <artifactId>dbpool</artifactId>-->
+<!--                <version>${dep.airlift.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>io.airlift</groupId>
@@ -1558,11 +1559,11 @@
             </dependency>
 
             <!-- io.confluent:kafka-avro-serializer uses multiple versions of this transitive dependency -->
-            <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-core</artifactId>
-                <version>1.6.2</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>io.swagger</groupId>-->
+<!--                <artifactId>swagger-core</artifactId>-->
+<!--                <version>1.6.2</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>it.unimi.dsi</groupId>

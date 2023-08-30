@@ -41,7 +41,7 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 public class HttpsArtifactResolver {
-    public static final String USER_LOCAL_REPO = "E:\\maven\\rep";
+    public static final String USER_LOCAL_REPO = "D:\\Module\\Maven\\repo";
     public static final String MAVEN_CENTRAL_URI = "https://repo1.maven.org/maven2/";
     public static final String ALIYUN_MAVEN_CENTRAL_URI = "https://maven.aliyun.com/repository/public";
     public static final Set<String> DEPRECATED_MAVEN_CENTRAL_URIS = ImmutableSet.<String>builder()
